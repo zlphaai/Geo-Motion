@@ -19,7 +19,7 @@ export interface ExplanationResponse {
 declare global {
   interface AIStudio {
     hasSelectedApiKey: () => Promise<boolean>;
-    openSelectKey: () => Promise<boolean>;
+    openSelectKey: () => Promise<void>;
   }
 
   interface Window {

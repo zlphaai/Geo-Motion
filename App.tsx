@@ -5,7 +5,7 @@ import WaveGraph from './components/WaveGraph';
 import Controls from './components/Controls';
 import { TrigFunction } from './types';
 import { getMathExplanation } from './services/geminiService';
-import { Sparkles, Brain, Sigma, KeyRound } from 'lucide-react';
+import { Sparkles, Brain, Sigma, KeyRound, Info } from 'lucide-react';
 
 const App: React.FC = () => {
   // State
@@ -63,7 +63,7 @@ const App: React.FC = () => {
     const result = await getMathExplanation(func, angle);
     
     if (result === 'API_KEY_MISSING') {
-        setExplanation("未检测到 API 密钥。如果您在 AI Studio 或 IDX 环境中，请点击上方的解释按钮再次尝试选择密钥。如果在 GitHub Pages 上运行，您需要配置环境变量或在支持的环境中运行。");
+        setExplanation("AI 功能在此环境不可用。不用担心，您仍然可以完全正常地使用上方的所有几何动画和图表演示功能！");
     } else {
         setExplanation(result);
     }
@@ -86,7 +86,7 @@ const App: React.FC = () => {
             </h1>
           </div>
           <div className="text-xs font-medium text-slate-400 border border-slate-200 px-3 py-1 rounded-full">
-            React + Gemini 2.5
+            React + Gemini 3.0 Pro
           </div>
         </div>
       </header>
@@ -143,24 +143,24 @@ const App: React.FC = () => {
             {/* Explanation Panel */}
             {explanation && (
                 <div className={`border p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 ${
-                    explanation.includes('未检测到 API 密钥') 
-                    ? 'bg-amber-50 border-amber-200' 
+                    explanation.includes('AI 功能') 
+                    ? 'bg-slate-50 border-slate-200' 
                     : 'bg-gradient-to-br from-violet-50 to-indigo-50 border-violet-100'
                 }`}>
                     <div className="flex items-start space-x-3">
-                        {explanation.includes('未检测到 API 密钥') ? (
-                             <KeyRound className="text-amber-500 mt-1 flex-shrink-0" size={20} />
+                        {explanation.includes('AI 功能') ? (
+                             <Info className="text-slate-400 mt-1 flex-shrink-0" size={20} />
                         ) : (
                              <Sparkles className="text-violet-500 mt-1 flex-shrink-0" size={20} />
                         )}
                         <div>
                             <h3 className={`font-bold mb-2 ${
-                                explanation.includes('未检测到 API 密钥') ? 'text-amber-900' : 'text-violet-900'
+                                explanation.includes('AI 功能') ? 'text-slate-600' : 'text-violet-900'
                             }`}>
-                                {explanation.includes('未检测到 API 密钥') ? '配置提示' : 'AI 数学导师说：'}
+                                {explanation.includes('AI 功能') ? '提示' : 'AI 数学导师说：'}
                             </h3>
                             <p className={`leading-relaxed whitespace-pre-wrap ${
-                                explanation.includes('未检测到 API 密钥') ? 'text-amber-800' : 'text-violet-800'
+                                explanation.includes('AI 功能') ? 'text-slate-500' : 'text-violet-800'
                             }`}>{explanation}</p>
                         </div>
                     </div>
