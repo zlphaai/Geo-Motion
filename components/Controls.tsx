@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { TrigFunction } from '../types';
-import { Play, Pause, RotateCcw, Info } from 'lucide-react';
+import { Play, Pause, RotateCcw, Target } from 'lucide-react';
 
 interface ControlsProps {
   angle: number;
@@ -11,8 +12,8 @@ interface ControlsProps {
   setSpeed: (s: number) => void;
   func: TrigFunction;
   setFunc: (f: TrigFunction) => void;
-  onExplain: () => void;
-  isExplaining: boolean;
+  onStartQuiz: () => void;
+  quizActive: boolean;
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -24,8 +25,8 @@ const Controls: React.FC<ControlsProps> = ({
   setSpeed,
   func,
   setFunc,
-  onExplain,
-  isExplaining
+  onStartQuiz,
+  quizActive
 }) => {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
@@ -36,10 +37,11 @@ const Controls: React.FC<ControlsProps> = ({
           <button
             key={f}
             onClick={() => setFunc(TrigFunction[f])}
+            disabled={quizActive}
             className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
               func === TrigFunction[f]
                 ? func === 'SIN' ? 'bg-red-500 text-white shadow-md' : func === 'COS' ? 'bg-blue-500 text-white shadow-md' : 'bg-emerald-500 text-white shadow-md'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-50'
             }`}
           >
             {f}
@@ -59,11 +61,12 @@ const Controls: React.FC<ControlsProps> = ({
           max={4 * Math.PI}
           step="0.01"
           value={angle}
+          disabled={quizActive}
           onChange={(e) => {
             setAngle(parseFloat(e.target.value));
             setIsPlaying(false);
           }}
-          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 disabled:opacity-50"
         />
       </div>
 
@@ -72,7 +75,8 @@ const Controls: React.FC<ControlsProps> = ({
         <div className="flex space-x-2">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm active:scale-95"
+            disabled={quizActive}
+            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm active:scale-95 disabled:bg-slate-300 disabled:cursor-not-allowed"
             title={isPlaying ? "暂停" : "播放"}
           >
             {isPlaying ? <Pause size={20} /> : <Play size={20} />}
@@ -82,7 +86,8 @@ const Controls: React.FC<ControlsProps> = ({
               setAngle(0);
               setIsPlaying(false);
             }}
-            className="p-3 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+            disabled={quizActive}
+            className="p-3 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="重置"
           >
             <RotateCcw size={20} />
@@ -97,21 +102,25 @@ const Controls: React.FC<ControlsProps> = ({
                 max="2.0" 
                 step="0.1" 
                 value={speed} 
+                disabled={quizActive}
                 onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                className="w-24 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-24 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 disabled:opacity-50"
             />
         </div>
       </div>
 
-      {/* AI Tutor Button */}
+      {/* Quiz Button */}
       <div className="pt-2 border-t border-slate-100">
         <button
-          onClick={onExplain}
-          disabled={isExplaining}
-          className="w-full flex items-center justify-center space-x-2 py-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+          onClick={onStartQuiz}
+          className={`w-full flex items-center justify-center space-x-2 py-3 text-white rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] ${
+            quizActive 
+              ? 'bg-slate-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-orange-500 to-amber-500'
+          }`}
         >
-            <Info size={18} />
-            <span>{isExplaining ? 'AI 正在思考...' : '解释当前状态'}</span>
+            <Target size={18} />
+            <span>{quizActive ? '挑战进行中...' : '开始视觉估算挑战'}</span>
         </button>
       </div>
 

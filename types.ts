@@ -12,17 +12,11 @@ export interface MathState {
   selectedFunction: TrigFunction;
 }
 
-export interface ExplanationResponse {
-  markdown: string;
-}
-
-declare global {
-  interface AIStudio {
-    hasSelectedApiKey: () => Promise<boolean>;
-    openSelectKey: () => Promise<void>;
-  }
-
-  interface Window {
-    aistudio?: AIStudio;
-  }
+export interface QuizState {
+  isActive: boolean;
+  options: string[];
+  correctOptionIndex: number;
+  selectedOptionIndex: number | null;
+  score: number;
+  total: number;
 }
