@@ -1,0 +1,5 @@
+{
+  "name": "GeoMotion 几何演示",
+  "description": "连接单位圆与正弦、余弦和正切波的交互式几何可视化。配备由 Gemini 驱动的 AI 导师，可实时解释数学概念。",
+  "requestFramePermissions": []
+}
