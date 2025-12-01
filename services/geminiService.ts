@@ -1,8 +1,8 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { TrigFunction } from "../types";
 
-// 安全地获取 API Key。在浏览器环境中 process 可能未定义，需要进行检查以防止崩溃。
-// 注意：在 GitHub Pages 上，如果没有构建步骤注入变量，这里将为空，AI 功能将不可用，但应用不会白屏。
+// 安全地获取 API Key。
 const getApiKey = () => {
   try {
     if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
@@ -14,16 +14,15 @@ const getApiKey = () => {
   return '';
 };
 
-const apiKey = getApiKey();
-// 即使 key 为空也初始化，以便应用其他部分能正常渲染，只在调用时处理错误
-const ai = new GoogleGenAI({ apiKey: apiKey || 'MISSING_KEY' });
-
 export const getMathExplanation = async (
   func: TrigFunction,
   angleRad: number
 ): Promise<string> => {
+  const apiKey = getApiKey();
+
+  // 如果没有密钥，返回特定标识，以便 UI 层处理（例如触发选择器或显示提示）
   if (!apiKey || apiKey === 'MISSING_KEY') {
-    return "API 密钥未配置。请在环境中设置 API_KEY 以启用 AI 导师功能。";
+    return "API_KEY_MISSING";
   }
 
   const degrees = Math.round(angleRad * (180 / Math.PI));
@@ -43,6 +42,9 @@ export const getMathExplanation = async (
   `;
 
   try {
+    // 每次请求时创建实例，以确保使用最新的 API Key (如果环境发生了变化)
+    const ai = new GoogleGenAI({ apiKey });
+    
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,

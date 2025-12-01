@@ -1,3 +1,4 @@
+
 export enum TrigFunction {
   SIN = 'SIN',
   COS = 'COS',
@@ -13,4 +14,15 @@ export interface MathState {
 
 export interface ExplanationResponse {
   markdown: string;
+}
+
+declare global {
+  interface AIStudio {
+    hasSelectedApiKey: () => Promise<boolean>;
+    openSelectKey: () => Promise<boolean>;
+  }
+
+  interface Window {
+    aistudio?: AIStudio;
+  }
 }

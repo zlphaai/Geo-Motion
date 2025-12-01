@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import UnitCircle from './components/UnitCircle';
 import WaveGraph from './components/WaveGraph';
 import Controls from './components/Controls';
 import { TrigFunction } from './types';
 import { getMathExplanation } from './services/geminiService';
-import { Sparkles, Brain, Sigma } from 'lucide-react';
+import { Sparkles, Brain, Sigma, KeyRound } from 'lucide-react';
 
 const App: React.FC = () => {
   // State
@@ -46,8 +47,27 @@ const App: React.FC = () => {
   const handleExplain = async () => {
     setIsExplaining(true);
     setExplanation(null);
+
+    // 尝试在支持的环境中请求密钥 (例如 Google IDX / AI Studio)
+    if (window.aistudio) {
+        try {
+            const hasKey = await window.aistudio.hasSelectedApiKey();
+            if (!hasKey) {
+                await window.aistudio.openSelectKey();
+            }
+        } catch (e) {
+            console.warn("AI Studio key selection failed:", e);
+        }
+    }
+
     const result = await getMathExplanation(func, angle);
-    setExplanation(result);
+    
+    if (result === 'API_KEY_MISSING') {
+        setExplanation("未检测到 API 密钥。如果您在 AI Studio 或 IDX 环境中，请点击上方的解释按钮再次尝试选择密钥。如果在 GitHub Pages 上运行，您需要配置环境变量或在支持的环境中运行。");
+    } else {
+        setExplanation(result);
+    }
+    
     setIsExplaining(false);
   };
 
@@ -122,12 +142,26 @@ const App: React.FC = () => {
 
             {/* Explanation Panel */}
             {explanation && (
-                <div className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-100 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className={`border p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 ${
+                    explanation.includes('未检测到 API 密钥') 
+                    ? 'bg-amber-50 border-amber-200' 
+                    : 'bg-gradient-to-br from-violet-50 to-indigo-50 border-violet-100'
+                }`}>
                     <div className="flex items-start space-x-3">
-                        <Sparkles className="text-violet-500 mt-1 flex-shrink-0" size={20} />
+                        {explanation.includes('未检测到 API 密钥') ? (
+                             <KeyRound className="text-amber-500 mt-1 flex-shrink-0" size={20} />
+                        ) : (
+                             <Sparkles className="text-violet-500 mt-1 flex-shrink-0" size={20} />
+                        )}
                         <div>
-                            <h3 className="font-bold text-violet-900 mb-2">AI 数学导师说：</h3>
-                            <p className="text-violet-800 leading-relaxed whitespace-pre-wrap">{explanation}</p>
+                            <h3 className={`font-bold mb-2 ${
+                                explanation.includes('未检测到 API 密钥') ? 'text-amber-900' : 'text-violet-900'
+                            }`}>
+                                {explanation.includes('未检测到 API 密钥') ? '配置提示' : 'AI 数学导师说：'}
+                            </h3>
+                            <p className={`leading-relaxed whitespace-pre-wrap ${
+                                explanation.includes('未检测到 API 密钥') ? 'text-amber-800' : 'text-violet-800'
+                            }`}>{explanation}</p>
                         </div>
                     </div>
                 </div>
